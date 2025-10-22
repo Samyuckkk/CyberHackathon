@@ -1,0 +1,150 @@
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: #f6f7fb;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
+    }
+
+    /* Frosted glass navigation bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      
+      /* Translucent background with blur */
+      background:  rgba(221, 221, 221, 0.1);
+      backdrop-filter: blur(3px);  /* bg blur */
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(15, 15, 15, 0.05);
+      
+      /* Rounded corners and spacing */
+      margin: 25px;
+      border-radius: 16px;
+      padding: 18px 30px;
+      
+      /* Flexbox layout */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Logo section with gradient text */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 800;
+      text-decoration: none;
+      
+      /* Gradient text effect */
+      background: linear-gradient(to right, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Rotating sparkle emoji */
+    .sparkle {
+      display: inline-block;
+      transition: transform 0.3s ease;
+      font-size: 18px;
+    }
+
+    .logo:hover .sparkle {
+      transform: rotate(180deg);
+    }
+
+    /* Navigation links container */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    /* Individual navigation links */
+    .nav-link {
+      position: relative;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: rgba(24, 24, 24, 0.8);
+      font-weight: 500;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    /* Hover effect for non-active links */
+    .nav-link:hover:not(.active) {
+      background: rgba(24, 24, 24, 0.1);
+      color: rgba(24, 24, 24, 0.9);
+    }
+
+    /* Active link highlight */
+    .nav-link.active {
+      background: rgba(24, 24, 24, 0.15);
+      color: rgba(24, 24, 24, 1);
+    }
+
+    /* Responsive behavior */
+    @media (max-width: 640px) {
+      .navbar {
+        margin: 8px;
+        padding: 8px 16px;
+      }
+      
+      .nav-links {
+        gap: 4px;
+      }
+      
+      .nav-link {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      
+      .logo {
+        font-size: 18px;
+      }
+    }
+
+    /* Dots canvas */
+    #stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      display: block;
+    }
+
+    /* Centered heading overlay */
+    .center {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+      pointer-events: none;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(32px, 12vw, 140px);
+      line-height: 1.05;
+      font-weight: 800;
+
+      /* Gradient text: blue -> pink */
+      background: linear-gradient(to right, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      /* Make the fill transparent so the gradient shows through */
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }

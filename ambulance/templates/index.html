@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Ambulance • Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{% static "css/login.css" %}">
+</head>
+<body>
+  <!-- Background micro-dots -->
+  <canvas id="stars" aria-hidden="true"></canvas>
+
+  <!-- Login content -->
+  <main class="page" aria-label="Login">
+    <section class="card">
+      <h1 class="title">WELCOME</h1>
+      <p class="subtitle">Sign in to your account</p>
+      <br>
+
+      <form id="login-form" action={% url "index" %} method="POST" novalidate>
+        {% csrf_token %}
+        <div class="field">
+          <label class="label" for="email">Email</label>
+          <input class="input" id="email" name="username" type="email" placeholder="you@example.com" autocomplete="username" required />
+        </div>
+
+        <div class="field">
+          <label class="label" for="password">Password</label>
+          <input class="input" id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+          <img src="{% static 'images/show.svg' %}" class="toggle-password" id="togglePassword" alt="Show/Hide Password" />
+        </div>
+
+        <div class="row">
+          <a class="link" href="#">forget password?</a>
+        </div>
+
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const passwordInput = document.getElementById('password');
+  const togglePassword = document.getElementById('togglePassword');
+
+  togglePassword.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+
+    // Toggle icon image (optional)
+    togglePassword.src = isPassword
+      ? '/static/images/hide.svg'
+      : '/static/images/show.svg';
+  });
+});
+
+  </script>
+
+  <script src="{% static "js/base.js" %}"></script>
+  
+</body>
+</html>

@@ -46,9 +46,9 @@ def role_redirect(request):
 @login_required
 def hospital_dash(request):
 
-    return render(request, 'hospital_dash.html')
+    return render(request, 'hospital_dash.html', {'role' : 'hospital'})
 
 @login_required
 def ambulance_dash(request):
 
-    return render(request, 'ambulance_dash.html')
+    return render(request, 'ambulance_dash.html', {'role' : 'ambulance'})

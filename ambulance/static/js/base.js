@@ -11,11 +11,10 @@
       });
     });
 
-    // 80 tiny round dots on a high‑DPI canvas
     const DOT = '#000000';
     const MIN_R = 0.4;  // very small radius in CSS px
     const MAX_R = 0.9;  // very small radius in CSS px
-    const COUNT = 200;   // approximately 80 dots
+    const COUNT = 0;   // approximately 80 dots
 
     const canvas = document.getElementById('stars');
     const ctx = canvas.getContext('2d', { alpha: true });

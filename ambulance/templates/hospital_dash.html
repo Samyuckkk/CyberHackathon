@@ -1,10 +1,54 @@
 {% extends "base.html" %}
-
-{% block title %} Hospital Dashboard {% endblock  %}
-
+{% load static %}
+{% block title %}Hospital Dashboard{% endblock %}\
 
 {% block content %}
+<link href="{% static "css/hospital_dash.css"%}" rel="stylesheet">
 
-    <h1> This is hospital dashboard </h1>
+<main class="dashboard" aria-label="Hospital Dashboard">
+  <!-- Patient 1 -->
+  <section class="dash-block">
+    <div class="vitals-grid">
+      <div class="vital v-ekg"><div class="label">ECG</div><div class="value">HR 72 bpm</div></div>
+      <div class="vital v-spo2"><div class="label">SpO₂</div><div class="value">98%</div></div>
+      <div class="vital v-nibp"><div class="label">NIBP</div><div class="value">120/78 mmHg</div></div>
+      <div class="vital v-rr"><div class="label">RR</div><div class="value">18/min</div></div>
+      <div class="vital v-temp"><div class="label">Temp</div><div class="value">101°F</div></div>
+    </div>
+    <hr class="divider" />
+    <div class="status-row">
+      <span class="status critical">Critical</span>
+    </div>
+  </section>
 
-{% endblock  %}
+  <!-- Patient 2 -->
+  <section class="dash-block">
+    <div class="vitals-grid">
+      <div class="vital v-ekg"><div class="label">ECG</div><div class="value">HR 88 bpm</div></div>
+      <div class="vital v-spo2"><div class="label">SpO₂</div><div class="value">95%</div></div>
+      <div class="vital v-nibp"><div class="label">NIBP</div><div class="value">110/70 mmHg</div></div>
+      <div class="vital v-rr"><div class="label">RR</div><div class="value">20/min</div></div>
+      <div class="vital v-temp"><div class="label">Temp</div><div class="value">99.2°F</div></div>
+    </div>
+    <hr class="divider" />
+    <div class="status-row">
+      <span class="status noncritical">Stable</span>
+    </div>
+  </section>
+
+  <!-- Patient 3 -->
+  <section class="dash-block">
+    <div class="vitals-grid">
+      <div class="vital v-ekg"><div class="label">ECG</div><div class="value">HR 64 bpm</div></div>
+      <div class="vital v-spo2"><div class="label">SpO₂</div><div class="value">99%</div></div>
+      <div class="vital v-nibp"><div class="label">NIBP</div><div class="value">126/82 mmHg</div></div>
+      <div class="vital v-rr"><div class="label">RR</div><div class="value">16/min</div></div>
+      <div class="vital v-temp"><div class="label">Temp</div><div class="value">98.6°F</div></div>
+    </div>
+    <hr class="divider" />
+    <div class="status-row">
+      <span class="status noncritical">Stable</span>
+    </div>
+  </section>
+</main>
+{% endblock %}

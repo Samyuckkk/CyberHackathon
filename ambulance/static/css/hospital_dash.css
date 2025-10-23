@@ -1,0 +1,130 @@
+
+  /* Layout wrapper */
+  main.dashboard {
+    position: relative;
+    z-index: 1;
+    padding: 120px 40px 60px; /* add top space below navbar */
+    display: grid;
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
+    gap: 32px;
+  }
+
+  /* Glassy dashboard blocks */
+  .dash-block {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(24, 24, 24, 0.08);
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .dash-block:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Vital signs grid */
+  .vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, auto);
+    gap: 16px 20px;
+    min-height: 140px;
+    align-items: center;
+    justify-items: center;
+  }
+
+  /* Positioning vital signs in pattern */
+  .v-ekg  { grid-column: 1; grid-row: 1; }
+  .v-spo2 { grid-column: 3; grid-row: 1; }
+  .v-nibp { grid-column: 1; grid-row: 3; }
+  .v-rr   { grid-column: 3; grid-row: 3; }
+  .v-temp { grid-column: 2; grid-row: 2; }
+
+  .vital {
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  .vital .label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(24, 24, 24, 0.6);
+    margin-bottom: 4px;
+  }
+
+  .vital .value {
+    font-weight: 700;
+    font-size: 18px;
+    background: linear-gradient(to right, #6366f1, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Divider */
+  .divider {
+    margin: 12px 0 16px;
+    border: 0;
+    border-top: 1px solid rgba(24, 24, 24, 0.08);
+  }
+
+  /* Status Row */
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 40px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
+  }
+
+  .status.critical {
+    background: rgba(239, 68, 68, 0.15);
+    color: #b91c1c;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .status.noncritical {
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  /* Smooth fade-in animation */
+  .dash-block {
+    opacity: 0;
+    animation: fadeIn 0.7s ease forwards;
+  }
+  .dash-block:nth-child(2) { animation-delay: 0.15s; }
+  .dash-block:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive layout */
+  @media (max-width: 1024px) {
+    main.dashboard { grid-template-columns: repeat(2, minmax(280px, 1fr)); }
+  }
+
+  @media (max-width: 720px) {
+    main.dashboard { grid-template-columns: 1fr; padding: 100px 20px; }
+  }

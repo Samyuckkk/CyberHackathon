@@ -2,7 +2,7 @@
   /* Layout wrapper */
   main.dashboard {
     position: relative;
-    z-index: 1;
+    z-index: 50;
     padding: 120px 40px 60px; /* add top space below navbar */
     display: grid;
     grid-template-columns: repeat(3, minmax(300px, 1fr));
@@ -24,7 +24,7 @@
 
   /* Glassy dashboard blocks */
   .dash-block {
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(24, 24, 24, 0.08);
@@ -35,6 +35,7 @@
   }
 
   .dash-block:hover {
+    background: rgba(255, 255, 255, 0.57);
     transform: translateY(-4px);
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
   }
@@ -141,3 +142,8 @@
   @media (max-width: 720px) {
     main.dashboard { grid-template-columns: 1fr; padding: 100px 20px; }
   }
+
+
+
+
+

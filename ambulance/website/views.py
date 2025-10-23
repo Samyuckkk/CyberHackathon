@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
 
 # Create your views here.
 
@@ -45,8 +46,26 @@ def role_redirect(request):
 
 @login_required
 def hospital_dash(request):
+    # Get all users in 'ambulance' group
+    try:
+        ambulance_group = Group.objects.get(name='ambulance')
+        ambulance_users = ambulance_group.user_set.all()
+    except Group.DoesNotExist:
+        ambulance_users = []
 
-    return render(request, 'hospital_dash.html', {'role' : 'hospital'})
+    # Example: mock vitals for each user
+    vitals_data = []
+    for i, user in enumerate(ambulance_users, start=1):
+        vitals_data.append({
+            "name": user.first_name,
+            "ecg": f"HR {70 + i*2} bpm",
+            "spo2": f"{95 + i}%","nibp": f"{110 + i}/{70 + i} mmHg",
+            "rr": f"{18 + i}/min",
+            "temp": f"{98 + i*0.5}°F",
+            "status": "Critical" if i == 1 else "Stable"
+        })
+
+    return render(request, 'hospital_dash.html', {'role': 'hospital','vitals_data': vitals_data})
 
 @login_required
 def ambulance_dash(request):

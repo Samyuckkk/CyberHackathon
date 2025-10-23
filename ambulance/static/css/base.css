@@ -1,150 +1,159 @@
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      background: #f6f7fb;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
-    }
+html, body {
+  height: 100%;
+  margin: 0;
+  /* background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); */
+  /* background: #91aa51; */
+  background: linear-gradient(180deg, #91aa51 0%, #a8c66c 50%, #c8e1a1 100%);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #1e293b;
+  overflow-x: hidden;
+}
 
-    /* Frosted glass navigation bar */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      
-      /* Translucent background with blur */
-      background:  rgba(221, 221, 221, 0.1);
-      backdrop-filter: blur(3px);  /* bg blur */
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(15, 15, 15, 0.05);
-      
-      /* Rounded corners and spacing */
-      margin: 25px;
-      border-radius: 16px;
-      padding: 18px 30px;
-      
-      /* Flexbox layout */
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+/* -------------------- Frosted Glass Navbar -------------------- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 
-    /* Logo section with gradient text */
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 20px;
-      font-weight: 800;
-      text-decoration: none;
-      
-      /* Gradient text effect */
-      background: linear-gradient(to right, #6366f1, #ec4899);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
 
-    /* Rotating sparkle emoji */
-    .sparkle {
-      display: inline-block;
-      transition: transform 0.3s ease;
-      font-size: 18px;
-    }
+  margin: 24px;
+  border-radius: 18px;
+  padding: 18px 30px;
 
-    .logo:hover .sparkle {
-      transform: rotate(180deg);
-    }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    /* Navigation links container */
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      position: relative;
-    }
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
 
-    /* Individual navigation links */
-    .nav-link {
-      position: relative;
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: rgba(24, 24, 24, 0.8);
-      font-weight: 500;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
+.navbar:hover {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
 
-    /* Hover effect for non-active links */
-    .nav-link:hover:not(.active) {
-      background: rgba(24, 24, 24, 0.1);
-      color: rgba(24, 24, 24, 0.9);
-    }
+/* -------------------- Logo -------------------- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  font-weight: 800;
+  text-decoration: none;
+  background: linear-gradient(90deg, #2563eb, #0891b2);
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  transition: opacity 0.3s ease;
+}
 
-    /* Active link highlight */
-    .nav-link.active {
-      background: rgba(24, 24, 24, 0.15);
-      color: rgba(24, 24, 24, 1);
-    }
+.logo:hover {
+  opacity: 0.9;
+}
 
-    /* Responsive behavior */
-    @media (max-width: 640px) {
-      .navbar {
-        margin: 8px;
-        padding: 8px 16px;
-      }
-      
-      .nav-links {
-        gap: 4px;
-      }
-      
-      .nav-link {
-        padding: 6px 12px;
-        font-size: 13px;
-      }
-      
-      .logo {
-        font-size: 18px;
-      }
-    }
+.sparkle {
+  display: inline-block;
+  transition: transform 0.4s ease;
+  font-size: 18px;
+}
 
-    /* Dots canvas */
-    #stars {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      display: block;
-    }
+.logo:hover .sparkle {
+  transform: rotate(360deg);
+}
 
-    /* Centered heading overlay */
-    .center {
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      z-index: 1;
-      pointer-events: none;
-      padding: 24px;
-      text-align: center;
-    }
+/* -------------------- Nav Links -------------------- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    .title {
-      margin: 0;
-      font-size: clamp(32px, 12vw, 140px);
-      line-height: 1.05;
-      font-weight: 800;
+.nav-link {
+  position: relative;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  color: #334155;
+  transition: all 0.3s ease;
+}
 
-      /* Gradient text: blue -> pink */
-      background: linear-gradient(to right, #6366f1, #ec4899);
-      -webkit-background-clip: text;
-      background-clip: text;
+.nav-link:hover:not(.active) {
+  background: rgba(37, 99, 235, 0.08);
+  color: #1e3a8a;
+}
 
-      /* Make the fill transparent so the gradient shows through */
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
+.nav-link.active {
+  /* background: linear-gradient(90deg, #2563eb, #0ea5e9); */
+  background: #fda769;
+  color: white;
+  box-shadow: 0 0 10px rgba(253, 167, 105, 0.4);
+}
+
+/* -------------------- Background Canvas -------------------- */
+#stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
+
+/* -------------------- Center Title Overlay -------------------- */
+.center {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  pointer-events: none;
+  padding: 24px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(32px, 10vw, 120px);
+  line-height: 1.05;
+  font-weight: 800;
+  background: linear-gradient(90deg, #2563eb, #0891b2);
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 8s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* -------------------- Responsive -------------------- */
+@media (max-width: 640px) {
+  .navbar {
+    margin: 10px;
+    padding: 10px 16px;
+  }
+
+  .nav-links {
+    gap: 6px;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+}

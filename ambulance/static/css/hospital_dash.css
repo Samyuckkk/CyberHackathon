@@ -2,7 +2,7 @@
   /* Layout wrapper */
   main.dashboard {
     position: relative;
-    z-index: 50;
+    z-index: 0;
     padding: 120px 40px 60px; /* add top space below navbar */
     display: grid;
     grid-template-columns: repeat(3, minmax(300px, 1fr));
@@ -147,3 +147,151 @@
 
 
 
+/* -----------------------
+   Expanded block & overlay
+   ----------------------- */
+
+/* page dim (under expanded panel but under navbar) */
+#page-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 15, 23, 0.45); /* dim, keeps contrast */
+  z-index: 60; /* below navbar(100) and below expanded block (70) */
+  display: none;
+}
+
+/* when overlay is active */
+#page-overlay.active { display: block; }
+
+/* keep dash-block normal styles but add expanded state */
+.dash-block.expanded {
+  position: fixed;
+  top: 84px;                      /* below the navbar — adjust if your navbar height changes */
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1180px, 94%);
+  height: calc(100vh - 110px);
+  z-index: 70;                    /* below navbar (100) but above overlay (60) */
+  background: rgba(255, 255, 255, 0.72); /* glassy but not opaque white */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 14px;
+  border: 1px solid rgba(24, 24, 24, 0.06);
+  box-shadow: 0 18px 40px rgba(10, 20, 30, 0.25);
+  padding: 20px;
+  overflow: auto;
+  transition: transform 0.28s ease, width 0.28s ease, height 0.28s ease;
+}
+
+/* ensure original tiny fade-in animation doesn't override expanded layout */
+.dash-block.expanded { animation: none; }
+
+/* content inside expanded panel */
+.dash-block .expanded-content {
+  display: flex;
+  gap: 18px;
+  margin-top: 12px;
+  align-items: flex-start;
+}
+
+/* left / middle / right columns */
+.expanded-content .left-column   { flex: 0 0 33%; min-width: 240px; max-width: 380px; }
+.expanded-content .middle-column { flex: 1; min-width: 260px; }
+.expanded-content .right-column  { flex: 0 0 28%; min-width: 220px; max-width: 360px; }
+
+/* mini vitals card (top-left) — same look as dash-block small vitals */
+.left-column .mini-vitals {
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(24,24,24,0.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+/* reuse your vitals-grid but make it compact within the mini card */
+.left-column .mini-vitals .vitals-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 12px;
+  min-height: 100px;
+}
+
+/* AI explanation block under the mini vitals */
+.ai-section {
+  margin-top: 14px;
+  background: rgba(255,255,255,0.55);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(24,24,24,0.04);
+  color: #0f172a;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+/* symptoms center area */
+.middle-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.middle-column h3 { margin: 0 0 6px 0; }
+.middle-column ul { margin: 0; padding-left: 1.1rem; }
+.contact-btn {
+  margin-top: 12px;
+  align-self: start;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #fda769, #ff8a4b);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* requirements / actions right area */
+.right-column h3 { margin-top: 0; }
+.require-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.require-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255,255,255,0.56);
+  padding: 10px; border-radius: 8px; border: 1px solid rgba(24,24,24,0.04);
+}
+.require-item .actions { display:flex; gap:8px; }
+.assign-btn, .page-btn {
+  background: rgba(37,99,235,0.12);
+  border: 1px solid rgba(37,99,235,0.12);
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: #0b3b88;
+  cursor: pointer;
+  font-weight:600;
+}
+
+/* close button (top-right of expanded panel) */
+.dash-block .close-expanded {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  background: rgba(10,10,10,0.06);
+  border: none;
+  width: 36px; height: 36px;
+  border-radius: 8px; cursor: pointer;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 18px;
+}
+
+/* responsive: stacked layout on small screens */
+@media (max-width: 900px) {
+  .dash-block.expanded {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96%;
+    height: calc(100vh - 100px);
+    padding: 14px;
+  }
+  .expanded-content { flex-direction: column; }
+  .expanded-content .left-column,
+  .expanded-content .right-column,
+  .expanded-content .middle-column { flex: unset; width: 100%; }
+  .left-column .mini-vitals .vitals-grid { grid-template-columns: repeat(3, 1fr); }
+}

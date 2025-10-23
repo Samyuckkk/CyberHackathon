@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Hospital Dashboard{% endblock %}\
+{% block title %}Hospital Dashboard{% endblock %}
 
 {% block content %}
-<link href="{% static "css/hospital_dash.css"%}" rel="stylesheet">
+<link href="{% static "css/hospital_dash.css" %}" rel="stylesheet">
+
 
 <main class="dashboard" aria-label="Hospital Dashboard">
   
   {% for data in vitals_data %}
-  
-  <section class="dash-block">
+  <section class="dash-block" onclick="expandBlock(this)">
     <div class="vitals-grid">
       <div class="vital v-ekg"><div class="label">ECG</div><div class="value">{{data.ecg}}</div></div>
       <div class="vital v-spo2"><div class="label">SpO₂</div><div class="value">{{data.spo2}}</div></div>
@@ -17,15 +17,20 @@
       <div class="vital v-rr"><div class="label">RR</div><div class="value">{{data.rr}}</div></div>
       <div class="vital v-temp"><div class="label">Temp</div><div class="value">{{data.temp}}</div></div>
     </div>
+
     <hr class="divider" />
     <div class="status-row">
-      <span class="status {% if data.status == "Critical" %} critical {% else %} noncritical {% endif %}">{{data.status}}</span>
+      <span class="status {% if data.status == 'Critical' %}critical{% else %}noncritical{% endif %}">
+        {{data.status}}
+      </span>
       <span class="block-tag">{{data.name}}</span>
     </div>
   </section>
-
   {% endfor %}
 
 </main>
+
+
+<script src="{% static "js/hospital_dash.js" %}"></script>
 
 {% endblock %}

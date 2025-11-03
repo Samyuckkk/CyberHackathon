@@ -1,0 +1,78 @@
+/* base layout */
+.dashboard-full {
+  padding: 90px 28px; /* leave room for navbar */
+}
+.dash-full-block {
+  width: 100%;
+  height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-3x2 {
+  width: min(1180px, 96%);
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.cell {
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(24,24,24,0.06);
+  padding: 16px;
+  box-shadow: 0 10px 26px rgba(8,12,20,0.06);
+  overflow: auto;
+  position: relative;
+}
+
+.card-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.card-header h2 { margin:0; font-size:18px; }
+.small-muted { color: rgba(12,12,12,0.45); font-size:12px; }
+
+/* reuse vitals styles from hospital dash with slight size changes */
+.vitals-grid { display:grid; grid-template-columns: repeat(3,1fr); grid-template-rows: repeat(3, auto); gap:10px 12px; align-items:center; justify-items:center; }
+.v-ekg  { grid-column: 1; grid-row: 1; }
+.v-spo2 { grid-column: 3; grid-row: 1; }
+.v-nibp { grid-column: 1; grid-row: 3; }
+.v-rr   { grid-column: 3; grid-row: 3; }
+.v-temp { grid-column: 2; grid-row: 2; }
+.vital{ text-align:center; }
+.vital .label { font-size:11px; color: rgba(24,24,24,0.6); }
+.vital .value { font-weight:800; font-size:18px; }
+
+.status-row { display:flex; align-items:center; gap:10px; margin-top:10px; }
+.status { padding:8px 12px; border-radius:999px; font-weight:700; }
+.status.critical { background: rgba(239,68,68,0.12); color:#b91c1c; border:1px solid rgba(239,68,68,0.2); }
+.status.noncritical { background: rgba(16,185,129,0.12); color:#047857; border:1px solid rgba(16,185,129,0.2); }
+
+/* symptom UI */
+.symptom-input-row { display:flex; gap:8px; margin-top:10px; }
+.symptom-input-row input{ flex:1; padding:10px 12px; border-radius:8px; border:1px solid rgba(24,24,24,0.06); }
+.symptom-list { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+.symptom-pill{ display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:12px; background: rgba(255,255,255,0.6); border:1px solid rgba(24,24,24,0.04); }
+.symptom-pill .remove{ background:none; border:none; font-weight:700; cursor:pointer; }
+
+/* map area */
+.map-area { height: 220px; border-radius:10px; overflow:hidden; background: linear-gradient(180deg, rgba(244,246,248,1), rgba(236,239,241,1)); display:flex; align-items:center; justify-content:center; }
+.map-placeholder{ color: rgba(12,12,12,0.5); font-weight:600; }
+.eta-row{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+
+/* ai, instructions, contact styling */
+.ai-section { background: rgba(255,255,255,0.56); padding:12px; border-radius:10px; border:1px solid rgba(24,24,24,0.04); }
+.require-list { margin-top:8px; display:flex; flex-direction:column; gap:8px; }
+.require-item{ padding:10px; border-radius:8px; background:rgba(255,255,255,0.6); border:1px solid rgba(24,24,24,0.04); }
+.contact-list{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+.assign-btn, .page-btn{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+.assign-btn{ background: rgba(37,99,235,0.12); color:#0b3b88; }
+.page-btn{ background: rgba(10,10,10,0.06); color:#08142a; }
+
+/* responsive */
+@media (max-width: 1024px) { .grid-3x2 { grid-template-columns: repeat(2,1fr); grid-template-rows: repeat(3,1fr); } }
+@media (max-width: 720px) { .grid-3x2 { grid-template-columns: 1fr; grid-template-rows: repeat(6, auto); height: auto; } .dash-full-block{ align-items:flex-start; padding-top:40px; } }
+

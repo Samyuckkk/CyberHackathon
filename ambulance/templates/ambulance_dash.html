@@ -1,10 +1,107 @@
+<!-- ambulance_dash.html -->
 {% extends "base.html" %}
-
-{% block title %} Hospital Dashboard {% endblock  %}
-
+{% load static %}
+{% block title %}Ambulance Dashboard{% endblock %}
 
 {% block content %}
+<link href="{% static 'css/ambulance_dash.css' %}" rel="stylesheet">
 
-    <h1> This is ambulance dashboard </h1>
+<main class="dashboard-full" aria-label="Ambulance Dashboard">
+  <section class="dash-full-block">
+    <div class="grid-3x2">
+      <!-- PART 1: Vitals (top-left) -->
+      <div class="cell vitals-card" id="vitalsCard">
+        <div class="card-header">
+          <h2>Vitals</h2>
+          <span class="block-tag">Ambulance 1</span>
+        </div>
+        <div class="vitals-grid">
+          <div class="vital v-ekg"><div class="label">ECG</div><div class="value" id="ecg">--</div></div>
+          <div class="vital v-spo2"><div class="label">SpO₂</div><div class="value" id="spo2">--</div></div>
+          <div class="vital v-nibp"><div class="label">NIBP</div><div class="value" id="nibp">--</div></div>
+          <div class="vital v-rr"><div class="label">RR</div><div class="value" id="rr">--</div></div>
+          <div class="vital v-temp"><div class="label">Temp</div><div class="value" id="temp">--</div></div>
+        </div>
+        <hr class="divider" />
+        <div class="status-row">
+          <span id="vitalStatus" class="status noncritical">Stable</span>
+          <button class="assign-btn" id="openExpand">Expand</button>
+        </div>
+      </div>
 
-{% endblock  %}
+      <!-- PART 2: Add Symptoms (top-middle) -->
+      <div class="cell symptoms-card">
+        <div class="card-header">
+          <h2>Symptoms</h2>
+        </div>
+        <div class="symptom-input-row">
+          <input id="symptomInput" type="text" placeholder="Describe symptom (e.g. chest pain)" />
+          <button id="addSymptomBtn" class="assign-btn">Add Symptoms</button>
+        </div>
+        <div id="symptomList" class="symptom-list"></div>
+      </div>
+
+      <!-- PART 3: Map & ETA (top-right) -->
+      <div class="cell map-card">
+        <div class="card-header">
+          <h2>Route to Hospital</h2>
+          <span class="small-muted">ETA & Directions</span>
+        </div>
+        <div class="map-area" id="mapArea">
+          <!-- Placeholder map. In production, replace with Leaflet/Google Maps embed. -->
+          <div class="map-placeholder">Map loading... (replace with real map)</div>
+        </div>
+        <div class="eta-row">
+          <div class="eta">Time remaining: <strong id="eta">12:00</strong></div>
+          <a id="openMapsLink" class="page-btn" target="_blank" rel="noopener">Open in Maps</a>
+        </div>
+      </div>
+
+      <!-- PART 4: AI Explanation (bottom-left) -->
+      <div class="cell ai-card">
+        <div class="card-header">
+          <h2>AI Explanation</h2>
+          <span class="small-muted">Why this categorization?</span>
+        </div>
+        <div class="ai-section" id="aiExplanation">
+          <!-- Dummy content; replace with backend AI summary if available -->
+          <p><strong>Summary:</strong> The patient is categorized as <span id="aiCategory">Stable</span> because oxygen saturation remains above 92% and blood pressure is within acceptable range. Recent ECG shows minor irregularities — monitor continuously.</p>
+          <p><strong>Key factors:</strong></p>
+          <ul>
+            <li>SpO₂: <span id="ai_spo2">--</span></li>
+            <li>NIBP: <span id="ai_nibp">--</span></li>
+            <li>ECG changes: <span id="ai_ecg">--</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PART 5: Instructions from Hospital (bottom-middle) -->
+      <div class="cell instructions-card">
+        <div class="card-header">
+          <h2>Instructions from Hospital</h2>
+        </div>
+        <div class="require-list">
+          <div class="require-item">Secure airway and give oxygen (if SpO₂ < 94%)<div class="actions"><button class="page-btn">Acknowledge</button></div></div>
+          <div class="require-item">Start IV access and 1000ml crystalloids (if hypotensive)<div class="actions"><button class="page-btn">Acknowledge</button></div></div>
+          <div class="require-item">Prepare cath lab / notify cardiology<div class="actions"><button class="page-btn">Acknowledge</button></div></div>
+        </div>
+      </div>
+
+      <!-- PART 6: Contact Options (bottom-right) -->
+      <div class="cell contact-card">
+        <div class="card-header">
+          <h2>Contact Hospital</h2>
+        </div>
+        <div class="contact-list">
+          <button class="assign-btn" id="callER">Call Emergency</button>
+          <button class="assign-btn" id="msgTT">Send ETA & Notes</button>
+          <button class="page-btn" id="shareLoc">Share Location</button>
+        </div>
+      </div>
+
+    </div> <!-- grid-3x2 -->
+  </section>
+</main>
+
+<script src="{% static 'js/ambulance_dash.js' %}"></script>
+{% endblock %}

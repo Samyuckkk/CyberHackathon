@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import json
+from django.utils import timezone
 
 def index(request):
 
@@ -57,11 +58,16 @@ def hospital_dash(request):
     except Group.DoesNotExist:
         ambulance_users = []
 
-    # ✅ Fetch actual vitals for each ambulance user
     vitals_data = []
+
+    from .models import AmbulanceStatus  # import inside function to avoid circular import
+
     for user in ambulance_users:
         vitals = Vitals.objects.filter(user=user).first()
-        if vitals:
+        status_entry = AmbulanceStatus.objects.filter(user=user).first()
+        is_active = status_entry.is_active if status_entry else False
+
+        if is_active and vitals:
             vitals_data.append({
                 "name": user.first_name,
                 "ecg": vitals.ecg,
@@ -69,10 +75,9 @@ def hospital_dash(request):
                 "nibp": vitals.nibp,
                 "rr": vitals.rr,
                 "temp": vitals.temp,
-                "status": vitals.status,
+                "status": "Active" if vitals.status != "Critical" else "Critical"
             })
         else:
-            # fallback in case a Vitals record doesn't exist yet
             vitals_data.append({
                 "name": user.first_name,
                 "ecg": "--",
@@ -80,7 +85,7 @@ def hospital_dash(request):
                 "nibp": "--",
                 "rr": "--",
                 "temp": "--",
-                "status": "No Data",
+                "status": "Inactive"
             })
 
     return render(request, 'hospital_dash.html', {
@@ -88,6 +93,49 @@ def hospital_dash(request):
         'vitals_data': vitals_data,
     })
 
+# def hospital_dash(request):
+
+#     try:
+#         ambulance_group = Group.objects.get(name='ambulance')
+#         ambulance_users = ambulance_group.user_set.all()
+#     except Group.DoesNotExist:
+#         ambulance_users = []
+
+#     vitals_data = []
+
+#     for ambulance in ambulance_users:
+#         try:
+#             vitals = Vitals.objects.filter(user=ambulance).latest('last_updated')
+#             # Check if data is recent (last 10 seconds)
+#             if (timezone.now() - vitals.last_updated).seconds > 10:
+#                 vitals_data.append({
+#                     "name": ambulance.first_name,
+#                     "ecg": "--",
+#                     "bp": "--",
+#                     "spo2": "--",
+#                     "temp": "--",
+#                     "status": "Inactive",
+#                 })
+#             else:
+#                 vitals_data.append({
+#                     "name": ambulance.first_name,
+#                     "ecg": vitals.ecg,
+#                     "bp": vitals.bp,
+#                     "spo2": vitals.spo2,
+#                     "temp": vitals.temp,
+#                     "status": vitals.status,
+#                 })
+#         except Vitals.DoesNotExist:
+#             vitals_data.append({
+#                 "name": ambulance.first_name,
+#                 "ecg": "--",
+#                 "bp": "--",
+#                 "spo2": "--",
+#                 "temp": "--",
+#                 "status": "Inactive",
+#             })
+
+#     return render(request, "hospital_dash.html", {"vitals_data": vitals_data})
 
 @login_required
 def ambulance_dash(request):
@@ -145,3 +193,4 @@ def get_all_vitals(request):
         } for v in vitals
     ]
     return JsonResponse(data, safe=False)
+

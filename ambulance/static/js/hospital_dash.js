@@ -20,3 +20,4 @@ function refreshVitals() {
 
 setInterval(refreshVitals, 2000); // every 2 seconds
 refreshVitals();
+

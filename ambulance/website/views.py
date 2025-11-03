@@ -4,8 +4,13 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
+from .models import Vitals
 
-# Create your views here.
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+import json
 
 def index(request):
 
@@ -46,28 +51,97 @@ def role_redirect(request):
 
 @login_required
 def hospital_dash(request):
-    # Get all users in 'ambulance' group
     try:
         ambulance_group = Group.objects.get(name='ambulance')
         ambulance_users = ambulance_group.user_set.all()
     except Group.DoesNotExist:
         ambulance_users = []
 
-    # Example: mock vitals for each user
+    # ✅ Fetch actual vitals for each ambulance user
     vitals_data = []
-    for i, user in enumerate(ambulance_users, start=1):
-        vitals_data.append({
-            "name": user.first_name,
-            "ecg": f"HR {70 + i*2} bpm",
-            "spo2": f"{95 + i}%","nibp": f"{110 + i}/{70 + i} mmHg",
-            "rr": f"{18 + i}/min",
-            "temp": f"{98 + i*0.5}°F",
-            "status": "Critical" if i == 1 else "Stable"
-        })
+    for user in ambulance_users:
+        vitals = Vitals.objects.filter(user=user).first()
+        if vitals:
+            vitals_data.append({
+                "name": user.first_name,
+                "ecg": vitals.ecg,
+                "spo2": vitals.spo2,
+                "nibp": vitals.nibp,
+                "rr": vitals.rr,
+                "temp": vitals.temp,
+                "status": vitals.status,
+            })
+        else:
+            # fallback in case a Vitals record doesn't exist yet
+            vitals_data.append({
+                "name": user.first_name,
+                "ecg": "--",
+                "spo2": "--",
+                "nibp": "--",
+                "rr": "--",
+                "temp": "--",
+                "status": "No Data",
+            })
 
-    return render(request, 'hospital_dash.html', {'role': 'hospital','vitals_data': vitals_data})
+    return render(request, 'hospital_dash.html', {
+        'role': 'hospital',
+        'vitals_data': vitals_data,
+    })
+
 
 @login_required
 def ambulance_dash(request):
 
     return render(request, 'ambulance_dash.html', {'role' : 'ambulance'})
+
+
+
+
+
+
+@login_required
+def send_vitals(request):
+    """Called by ambulance dashboard to push new vitals to hospital"""
+    if request.method == "POST":
+        data = json.loads(request.body)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "vitals_room", {"type": "send_vitals", "data": data}
+        )
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+@csrf_exempt
+def update_vitals(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = request.user
+        vitals, _ = Vitals.objects.get_or_create(user=user)
+
+        vitals.ecg = data.get('ecg', vitals.ecg)
+        vitals.spo2 = data.get('spo2', vitals.spo2)
+        vitals.nibp = data.get('nibp', vitals.nibp)
+        vitals.rr = data.get('rr', vitals.rr)
+        vitals.temp = data.get('temp', vitals.temp)
+        vitals.status = data.get('status', vitals.status)
+        vitals.save()
+
+        return JsonResponse({'message': 'Vitals updated successfully'})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def get_all_vitals(request):
+    vitals = Vitals.objects.select_related('user').all()
+    data = [
+        {
+            'name': v.user.username,
+            'ecg': v.ecg,
+            'spo2': v.spo2,
+            'nibp': v.nibp,
+            'rr': v.rr,
+            'temp': v.temp,
+            'status': v.status
+        } for v in vitals
+    ]
+    return JsonResponse(data, safe=False)

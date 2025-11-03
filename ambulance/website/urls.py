@@ -24,4 +24,6 @@ urlpatterns = [
     path('role-redirect/', views.role_redirect, name='role_redirect'),
     path('hospital-dashboard/', views.hospital_dash, name='hospital_dash'),
     path('ambulance-dashboard/', views.ambulance_dash, name='ambulance_dash'),
+    path('api/update-vitals/', views.update_vitals, name='update_vitals'),
+    path('api/get-vitals/', views.get_all_vitals, name='get_all_vitals'),
 ]

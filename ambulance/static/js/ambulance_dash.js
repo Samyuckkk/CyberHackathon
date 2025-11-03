@@ -13,6 +13,22 @@
 
   function randBetween(min,max){ return Math.round((Math.random()*(max-min))+min); }
 
+  function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+
   // start with realistic baseline
   let vitals = {
     ecg: 'Normal',
@@ -36,13 +52,13 @@
 
     // push to DOM
     ecgEl.textContent = vitals.ecg;
-    spo2El.textContent = vitals.spo2 + '%';
+    spo2El.textContent = vitals.spo2.toFixed(1) + '%';
     nibpEl.textContent = vitals.nibp_sys + '/' + vitals.nibp_dia + ' mmHg';
     rrEl.textContent = vitals.rr + ' /min';
     tempEl.textContent = vitals.temp + ' °C';
 
     // AI field mirrors
-    ai_spo2.textContent = vitals.spo2 + '%';
+    ai_spo2.textContent = vitals.spo2.toFixed(1) + '%';
     ai_nibp.textContent = vitals.nibp_sys + '/' + vitals.nibp_dia;
     ai_ecg.textContent = vitals.ecg;
 
@@ -53,6 +69,25 @@
     } else {
       statusEl.classList.remove('critical'); statusEl.classList.add('noncritical'); statusEl.textContent = 'Stable'; aiCategoryEl.textContent = 'Stable';
     }
+
+    // send vitals to backend
+fetch('/api/update-vitals/', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': getCookie('csrftoken'),
+  },
+  body: JSON.stringify({
+    ecg: vitals.ecg,
+    spo2: vitals.spo2.toFixed(1),
+    nibp: vitals.nibp_sys + '/' + vitals.nibp_dia,
+    rr: vitals.rr,
+    temp: vitals.temp,
+    status: statusEl.textContent
+  })
+}).catch(err => console.error('Error updating vitals:', err));
+
+
   }
 
   // run updates every 1.5s

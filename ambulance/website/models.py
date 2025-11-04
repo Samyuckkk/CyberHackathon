@@ -18,7 +18,7 @@ class Vitals(models.Model):
 class AmbulanceStatus(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
-    last_update = models.DateTimeField(auto_now=True)
+    last_seen = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} - {'Active' if self.is_active else 'Inactive'}"

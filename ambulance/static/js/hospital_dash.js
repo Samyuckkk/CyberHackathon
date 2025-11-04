@@ -37,5 +37,5 @@ function refreshVitals() {
 }
 
 // Refresh every 2 seconds
-setInterval(refreshVitals, 20);
+setInterval(refreshVitals, 2000);
 refreshVitals();

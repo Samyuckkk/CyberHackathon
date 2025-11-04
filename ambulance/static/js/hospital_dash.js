@@ -1,10 +1,17 @@
+console.log("✅ hospital_dash.js loaded");
+
+// Function to update vitals dynamically
 function refreshVitals() {
+  console.log("Fetching vitals...");
   fetch('/api/get-vitals/')
     .then(res => res.json())
     .then(data => {
       data.forEach(v => {
-        const block = document.querySelector(`.dash-block[data-username="${v.name}"]`);
-        if (!block) return;
+        const block = document.querySelector(`.dash-block[data-username="${v.username}"]`);
+        if (!block) {
+          console.warn(`⚠️ No block found for ${v.username}`);
+          return;
+        }
 
         const ecgEl = block.querySelector('.v-ekg .value');
         const spo2El = block.querySelector('.v-spo2 .value');
@@ -21,15 +28,15 @@ function refreshVitals() {
           rrEl.textContent = '--';
           tempEl.textContent = '--';
         } else {
-          ecgEl.textContent = v.ecg;
-          spo2El.textContent = v.spo2 + '%';
-          nibpEl.textContent = v.nibp;
-          rrEl.textContent = v.rr;
-          tempEl.textContent = v.temp + '°C';
+          ecgEl.textContent = v.ecg ?? '--';
+          spo2El.textContent = v.spo2 ? `${v.spo2}%` : '--';
+          nibpEl.textContent = v.nibp ?? '--';
+          rrEl.textContent = v.rr ?? '--';
+          tempEl.textContent = v.temp ? `${v.temp}°C` : '--';
         }
 
-        // Update status
-        statusEl.textContent = v.status;
+        // Update status text and color
+        statusEl.textContent = v.status || 'Inactive';
         statusEl.className = 'status ' + (v.status === 'Critical' ? 'critical' : 'noncritical');
       });
     })

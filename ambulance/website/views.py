@@ -165,57 +165,106 @@ def update_vitals(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
+# def get_all_vitals(request):
+#     now = timezone.now()
+#     timeout_seconds = 10
+
+#     try:
+#         ambulance_group = Group.objects.get(name='ambulance')
+#         ambulance_users = ambulance_group.user_set.all()
+#     except Group.DoesNotExist:
+#         ambulance_users = []
+
+#     data = []
+
+#     for user in ambulance_users:
+#         vitals = Vitals.objects.filter(user=user).order_by('-last_updated').first()
+#         status_entry, _ = AmbulanceStatus.objects.get_or_create(user=user)
+
+#         # Determine active/inactive
+#         is_active = False
+#         if status_entry.last_seen:
+#             diff = (now - status_entry.last_seen).total_seconds()
+#             if diff <= timeout_seconds:
+#                 is_active = True
+#             else:
+#                 status_entry.is_active = False
+#                 status_entry.save(update_fields=['is_active'])
+#                 print(f"[TIMEOUT] {user.username}: No update for {diff:.1f}s (inactive).")
+#         else:
+#             print(f"[NO STATUS] {user.username}: Never seen active.")
+
+#         # Compose output
+#         if is_active and vitals:
+#             data.append({
+#                 'username': user.username,
+#                 'name': user.first_name or user.username,
+#                 'ecg': vitals.ecg,
+#                 'spo2': vitals.spo2,
+#                 'nibp': vitals.nibp,
+#                 'rr': vitals.rr,
+#                 'temp': vitals.temp,
+#                 'status': 'Active' if vitals.status != 'Critical' else 'Critical'
+#             })
+#         else:
+#             data.append({
+#                 'username': user.username,
+#                 'name': user.first_name or user.username,
+#                 'ecg': '--',
+#                 'spo2': '--',
+#                 'nibp': '--',
+#                 'rr': '--',
+#                 'temp': '--',
+#                 'status': 'Inactive'
+#             })
+
+#     return JsonResponse(data, safe=False)
+
 def get_all_vitals(request):
+    """
+    Return latest vitals for all ambulances.
+    If ambulance inactive > 10s, show '--' and status='Inactive'.
+    """
     now = timezone.now()
-    timeout_seconds = 10
+    timeout_seconds = 10  # change here if you want a longer inactivity timeout
 
-    try:
-        ambulance_group = Group.objects.get(name='ambulance')
-        ambulance_users = ambulance_group.user_set.all()
-    except Group.DoesNotExist:
-        ambulance_users = []
+    ambulance_group = Group.objects.filter(name="ambulance").first()
+    ambulance_users = ambulance_group.user_set.all() if ambulance_group else []
 
-    data = []
+    response_data = []
 
     for user in ambulance_users:
-        vitals = Vitals.objects.filter(user=user).order_by('-last_updated').first()
-        status_entry, _ = AmbulanceStatus.objects.get_or_create(user=user)
+        vitals = Vitals.objects.filter(user=user).first()
+        status_entry = AmbulanceStatus.objects.filter(user=user).first()
+        last_seen = status_entry.last_seen if status_entry else None
 
         # Determine active/inactive
         is_active = False
-        if status_entry.last_seen:
-            diff = (now - status_entry.last_seen).total_seconds()
-            if diff <= timeout_seconds:
-                is_active = True
-            else:
-                status_entry.is_active = False
-                status_entry.save(update_fields=['is_active'])
-                print(f"[TIMEOUT] {user.username}: No update for {diff:.1f}s (inactive).")
-        else:
-            print(f"[NO STATUS] {user.username}: Never seen active.")
+        if last_seen and (now - last_seen).total_seconds() <= timeout_seconds:
+            is_active = True
 
-        # Compose output
-        if is_active and vitals:
-            data.append({
-                'username': user.username,
-                'name': user.first_name or user.username,
-                'ecg': vitals.ecg,
-                'spo2': vitals.spo2,
-                'nibp': vitals.nibp,
-                'rr': vitals.rr,
-                'temp': vitals.temp,
-                'status': 'Active' if vitals.status != 'Critical' else 'Critical'
+        if not is_active:
+            print(f"[INACTIVE] {user.username} no update for >{timeout_seconds}s")
+            response_data.append({
+                "username": user.username,
+                "name": user.first_name or user.username,
+                "ecg": "--",
+                "spo2": "--",
+                "nibp": "--",
+                "rr": "--",
+                "temp": "--",
+                "status": "Inactive"
             })
         else:
-            data.append({
-                'username': user.username,
-                'name': user.first_name or user.username,
-                'ecg': '--',
-                'spo2': '--',
-                'nibp': '--',
-                'rr': '--',
-                'temp': '--',
-                'status': 'Inactive'
+            response_data.append({
+                "username": user.username,
+                "name": user.first_name or user.username,
+                "ecg": vitals.ecg if vitals else "--",
+                "spo2": vitals.spo2 if vitals else "--",
+                "nibp": vitals.nibp if vitals else "--",
+                "rr": vitals.rr if vitals else "--",
+                "temp": vitals.temp if vitals else "--",
+                "status": vitals.status if vitals else "Active"
             })
 
-    return JsonResponse(data, safe=False)
+    return JsonResponse(response_data, safe=False)  

@@ -12,6 +12,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import json
 from django.utils import timezone
+from datetime import timedelta
 
 def index(request):
 
@@ -67,8 +68,13 @@ def hospital_dash(request):
         status_entry = AmbulanceStatus.objects.filter(user=user).first()
         is_active = status_entry.is_active if status_entry else False
 
+        # Mark inactive if no vitals update for >10 seconds
+        if vitals and (timezone.now() - vitals.last_updated) > timedelta(seconds=10):
+            is_active = False
+
         if is_active and vitals:
             vitals_data.append({
+                "username": user.username,  # 👈 include for JS matching
                 "name": user.first_name,
                 "ecg": vitals.ecg,
                 "spo2": vitals.spo2,
@@ -79,6 +85,7 @@ def hospital_dash(request):
             })
         else:
             vitals_data.append({
+                "username": user.username,  # 👈 include for JS matching
                 "name": user.first_name,
                 "ecg": "--",
                 "spo2": "--",
@@ -93,49 +100,6 @@ def hospital_dash(request):
         'vitals_data': vitals_data,
     })
 
-# def hospital_dash(request):
-
-#     try:
-#         ambulance_group = Group.objects.get(name='ambulance')
-#         ambulance_users = ambulance_group.user_set.all()
-#     except Group.DoesNotExist:
-#         ambulance_users = []
-
-#     vitals_data = []
-
-#     for ambulance in ambulance_users:
-#         try:
-#             vitals = Vitals.objects.filter(user=ambulance).latest('last_updated')
-#             # Check if data is recent (last 10 seconds)
-#             if (timezone.now() - vitals.last_updated).seconds > 10:
-#                 vitals_data.append({
-#                     "name": ambulance.first_name,
-#                     "ecg": "--",
-#                     "bp": "--",
-#                     "spo2": "--",
-#                     "temp": "--",
-#                     "status": "Inactive",
-#                 })
-#             else:
-#                 vitals_data.append({
-#                     "name": ambulance.first_name,
-#                     "ecg": vitals.ecg,
-#                     "bp": vitals.bp,
-#                     "spo2": vitals.spo2,
-#                     "temp": vitals.temp,
-#                     "status": vitals.status,
-#                 })
-#         except Vitals.DoesNotExist:
-#             vitals_data.append({
-#                 "name": ambulance.first_name,
-#                 "ecg": "--",
-#                 "bp": "--",
-#                 "spo2": "--",
-#                 "temp": "--",
-#                 "status": "Inactive",
-#             })
-
-#     return render(request, "hospital_dash.html", {"vitals_data": vitals_data})
 
 @login_required
 def ambulance_dash(request):
@@ -152,6 +116,7 @@ def send_vitals(request):
     """Called by ambulance dashboard to push new vitals to hospital"""
     if request.method == "POST":
         data = json.loads(request.body)
+        data["username"] = request.user.username
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             "vitals_room", {"type": "send_vitals", "data": data}
@@ -194,3 +159,43 @@ def get_all_vitals(request):
     ]
     return JsonResponse(data, safe=False)
 
+# def get_all_vitals(request):
+#     try:
+#         # Get all users in the "ambulance" group
+#         ambulance_group = Group.objects.get(name='ambulance')
+#         ambulance_users = ambulance_group.user_set.all()
+#     except Group.DoesNotExist:
+#         return JsonResponse([], safe=False)
+
+#     data = []
+
+#     for user in ambulance_users:
+#         try:
+#             # Get the latest vitals for that ambulance user
+#             vitals = Vitals.objects.filter(user=user).latest('last_updated')
+
+#             # Check if the data is recent (last 10 seconds)
+#             recent = (timezone.now() - vitals.last_updated).seconds <= 10
+
+#             data.append({
+#                 'name': user.first_name or user.username,
+#                 'ecg': vitals.ecg if recent else "--",
+#                 'spo2': vitals.spo2 if recent else "--",
+#                 'nibp': vitals.nibp if recent else "--",
+#                 'rr': vitals.rr if recent else "--",
+#                 'temp': vitals.temp if recent else "--",
+#                 'status': vitals.status if recent else "Inactive",
+#             })
+#         except Vitals.DoesNotExist:
+#             # No data found for this ambulance
+#             data.append({
+#                 'name': user.first_name or user.username,
+#                 'ecg': "--",
+#                 'spo2': "--",
+#                 'nibp': "--",
+#                 'rr': "--",
+#                 'temp': "--",
+#                 'status': "Inactive",
+#             })
+
+#     return JsonResponse(data, safe=False)

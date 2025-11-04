@@ -2,15 +2,33 @@ function refreshVitals() {
   fetch('/api/get-vitals/')
     .then(res => res.json())
     .then(data => {
-      data.forEach((v, i) => {
-        const block = document.querySelectorAll('.dash-block')[i];
+      data.forEach(v => {
+        const block = document.querySelector(`.dash-block[data-username="${v.name}"]`);
         if (!block) return;
-        block.querySelector('.v-ekg .value').textContent = v.ecg;
-        block.querySelector('.v-spo2 .value').textContent = v.spo2 + '%';
-        block.querySelector('.v-nibp .value').textContent = v.nibp;
-        block.querySelector('.v-rr .value').textContent = v.rr;
-        block.querySelector('.v-temp .value').textContent = v.temp + '°C';
+
+        const ecgEl = block.querySelector('.v-ekg .value');
+        const spo2El = block.querySelector('.v-spo2 .value');
+        const nibpEl = block.querySelector('.v-nibp .value');
+        const rrEl = block.querySelector('.v-rr .value');
+        const tempEl = block.querySelector('.v-temp .value');
         const statusEl = block.querySelector('.status');
+
+        // Update vitals or show '--' if inactive
+        if (v.status === 'Inactive') {
+          ecgEl.textContent = '--';
+          spo2El.textContent = '--';
+          nibpEl.textContent = '--';
+          rrEl.textContent = '--';
+          tempEl.textContent = '--';
+        } else {
+          ecgEl.textContent = v.ecg;
+          spo2El.textContent = v.spo2 + '%';
+          nibpEl.textContent = v.nibp;
+          rrEl.textContent = v.rr;
+          tempEl.textContent = v.temp + '°C';
+        }
+
+        // Update status
         statusEl.textContent = v.status;
         statusEl.className = 'status ' + (v.status === 'Critical' ? 'critical' : 'noncritical');
       });
@@ -18,6 +36,6 @@ function refreshVitals() {
     .catch(err => console.error('Error fetching vitals:', err));
 }
 
-setInterval(refreshVitals, 2000); // every 2 seconds
+// Refresh every 2 seconds
+setInterval(refreshVitals, 20);
 refreshVitals();
-

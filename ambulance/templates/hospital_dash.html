@@ -5,11 +5,10 @@
 {% block content %}
 <link href="{% static "css/hospital_dash.css" %}" rel="stylesheet">
 
-
 <main class="dashboard" aria-label="Hospital Dashboard">
-  
+
   {% for data in vitals_data %}
-  <section class="dash-block" onclick="expandBlock(this)">
+  <section class="dash-block" data-username="{{ data.username }}" onclick="expandBlock(this)">
     <div class="vitals-grid">
       <div class="vital v-ekg"><div class="label">ECG</div><div class="value">{{data.ecg}}</div></div>
       <div class="vital v-spo2"><div class="label">SpO₂</div><div class="value">{{data.spo2}}</div></div>
@@ -29,7 +28,6 @@
   {% endfor %}
 
 </main>
-
 
 <script src="{% static "js/hospital_dash.js" %}"></script>
 

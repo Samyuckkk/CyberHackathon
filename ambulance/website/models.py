@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import base64
 
 class Vitals(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -22,3 +23,25 @@ class AmbulanceStatus(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {'Active' if self.is_active else 'Inactive'}"
+
+
+
+
+class ServerKeys(models.Model):
+    """Stores the hospital server’s keypairs (Kyber + ECC)"""
+    kyber_public = models.TextField()
+    kyber_private = models.TextField()
+    ecdh_public = models.TextField()
+    ecdh_private = models.TextField()
+
+    def __str__(self):
+        return "Server Hybrid-PQC Keys"
+
+
+class UserPublicKey(models.Model):
+    """Stores each ambulance’s Dilithium (signature) public key"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    dilithium_public = models.TextField()
+
+    def __str__(self):
+        return f"{self.user.username} keys"

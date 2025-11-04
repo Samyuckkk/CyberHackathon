@@ -103,5 +103,10 @@
   </section>
 </main>
 
+<script>
+  window.currentUser = "{{ request.user.username }}";
+</script>
+
+
 <script src="{% static 'js/ambulance_dash.js' %}"></script>
 {% endblock %}

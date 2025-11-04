@@ -71,13 +71,16 @@
     }
 
     // send vitals to backend
-fetch('/api/update-vitals/', {
+// send vitals securely (Hybrid PQC prototype)
+// Secure vitals send
+fetch('/api/update-vitals-secure/', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
     'X-CSRFToken': getCookie('csrftoken'),
   },
   body: JSON.stringify({
+    ambulance_id: window.currentUser, // || 'ambulance1@gmail.com',  // 👈 Add this
     ecg: vitals.ecg,
     spo2: vitals.spo2.toFixed(1),
     nibp: vitals.nibp_sys + '/' + vitals.nibp_dia,
@@ -85,7 +88,10 @@ fetch('/api/update-vitals/', {
     temp: vitals.temp,
     status: statusEl.textContent
   })
-}).catch(err => console.error('Error updating vitals:', err));
+})
+  .then(res => res.json())
+  .then(data => console.log('✅ Sent secure vitals:', data))
+  .catch(err => console.error('❌ Error sending secure vitals:', err));
 
 
   }

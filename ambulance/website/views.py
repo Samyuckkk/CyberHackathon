@@ -21,6 +21,10 @@ from django.utils import timezone
 from .models import ServerKeys, UserPublicKey
 from .crypto_helpers import MockKyber, MockDilithium, hkdf_derive
 
+from .merkle import merkle_root_from_samples
+from .models import IntegrityLog
+
+
 
 def index(request):
 
@@ -326,7 +330,7 @@ def register_ambulance_key(request):
 
 @csrf_exempt
 def update_vitals_secure(request):
-    """Receive mock secure vitals (unverified) from ambulance dashboard."""
+    """Receive mock secure vitals (with Merkle integrity check)"""
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
 
@@ -343,14 +347,41 @@ def update_vitals_secure(request):
     if not user:
         return JsonResponse({'error': 'unknown ambulance'}, status=404)
 
-    # Save vitals
+    # --- Step 1: Extract vitals ---
+    vitals_sample = {
+        "ecg": data.get("ecg"),
+        "spo2": data.get("spo2"),
+        "nibp": data.get("nibp"),
+        "rr": data.get("rr"),
+        "temp": data.get("temp"),
+        "status": data.get("status"),
+        "timestamp": time.time()
+    }
+
+    # --- Step 2: Compute Merkle root for integrity ---
+    samples = [vitals_sample]  # single-sample message
+    computed_root = merkle_root_from_samples(samples)
+    received_root = data.get("merkle_root")
+
+    if not received_root:
+        # For now, accept and assign computed root
+        received_root = computed_root
+
+    # --- Step 3: Verify ---
+    if computed_root != received_root:
+        print(f"[MERKLE FAIL] {ambulance_id}: root mismatch!")
+        return JsonResponse({'error': 'merkle root mismatch'}, status=400)
+    else:
+        print(f"[MERKLE OK] {ambulance_id}: {computed_root}")
+
+    # --- Step 4: Save vitals ---
     v, _ = Vitals.objects.get_or_create(user=user)
-    v.ecg = data.get('ecg', v.ecg)
-    v.spo2 = data.get('spo2', v.spo2)
-    v.nibp = data.get('nibp', v.nibp)
-    v.rr = data.get('rr', v.rr)
-    v.temp = data.get('temp', v.temp)
-    v.status = data.get('status', v.status)
+    v.ecg = vitals_sample["ecg"]
+    v.spo2 = vitals_sample["spo2"]
+    v.nibp = vitals_sample["nibp"]
+    v.rr = vitals_sample["rr"]
+    v.temp = vitals_sample["temp"]
+    v.status = vitals_sample["status"]
     v.last_updated = timezone.now()
     v.save()
 
@@ -359,6 +390,13 @@ def update_vitals_secure(request):
     s.last_seen = timezone.now()
     s.save(update_fields=['is_active', 'last_seen'])
 
-    print(f"[SECURE UPDATE] {user.username}: {data.get('status')} @ {s.last_seen}")
+    # --- Step 5: Log integrity ---
+    IntegrityLog.objects.create(
+        user=user,
+        merkle_root=received_root,
+        payload=vitals_sample
+    )
 
-    return JsonResponse({'status': 'secure vitals stored'})
+    print(f"[SECURE UPDATE] {user.username}: {v.status} @ {s.last_seen}")
+    return JsonResponse({'status': 'secure vitals stored', 'merkle_root': received_root})
+

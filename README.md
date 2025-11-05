@@ -1,58 +1,60 @@
-Secure STAT 🚑
+Secure STAT 🚑: A Modern, Post-Quantum Secure Hospital Command Dashboard
 
-A Modern, Secure Hospital Command Dashboard
+Introduction
 
-This project was developed for the CyberHackathon. It is a frontend prototype of a "smart" hospital dashboard designed to securely display real-time data from in-transit ambulances.
+Secure STAT is a high-fidelity frontend prototype developed for the CyberHackathon. It addresses critical security challenges in real-time healthcare data transmission by simulating a "smart" hospital command center designed to receive and display live patient vital signs from in-transit ambulances using secure-by-design, next-generation cryptographic protocols.
+
+This project demonstrates how two primary cybersecurity threats—data integrity and connection confidentiality—can be mitigated using advanced, future-proof techniques.
 
 📖 The Problem
 
-In modern healthcare, patient data is extremely sensitive. When data is transmitted from a moving ambulance to a hospital, it is vulnerable to two major threats:
+The transmission of real-time patient data (vitals, location) from an ambulance to a receiving hospital is highly sensitive and vulnerable, posing risks to patient safety and privacy:
 
-Data Tampering: An attacker could intercept and alter the patient's vital signs, leading to incorrect treatment.
+Data Tampering (Integrity Risk): An attacker could intercept and subtly alter a patient's vital signs (e.g., changing heart rate or SpO₂ readings). If hospital staff trust this altered data, it could lead to incorrect preparation or catastrophic misdiagnosis upon arrival.
 
-Eavesdropping: An attacker could steal patient data, violating privacy. This threat is magnified by the future risk of quantum computers breaking current encryption.
+Eavesdropping & Quantum Risk (Confidentiality Risk): Current standard encryption (like RSA and ECC) is vulnerable to being broken by large-scale quantum computers, magnifying the risk of catastrophic data theft (eavesdropping) in the near future.
 
-✨ Our Solution
+✨ Our Secure Solution
 
-Secure STAT is a dashboard prototype that not only visualizes critical data but also symbolizes a cutting-edge, secure-by-design architecture.
+Secure STAT is a dashboard prototype that not only visualizes critical data but also symbolizes a cutting-edge, secure-by-design architecture. It employs Post-Quantum Cryptography (PQC) and cryptographic verification to ensure that data is both private and unaltered.
 
-🚀 Key Features
+🔒 Cybersecurity Features (Simulated Indicators)
 
-Real-time Dashboard: A clean, responsive dashboard showing all active ambulances.
+The core innovation is demonstrated through these simulated, real-time status indicators in the Ambulance Details Modal:
 
-At-a-Glance Stats: Top-level cards for "Total Ambulances," "Critical," "Stable," and "Available."
+🛡️ Data Integrity and Verification
 
-Patient Vitals: A detailed modal for each ambulance shows live-updating charts for patient vitals (Heart Rate, SpO₂).
+Merkle Tree Verification (Verified - Merkle Check OK): This is the core integrity mechanism. It simulates cryptographic verification of every vital stream data packet against a Merkle root, providing an unbreakable guarantee that no data points were tampered with during transmission.
 
-Live Location: The modal includes an embedded Google Map showing the ambulance's destination (Vishwaraj Hospital, Pune).
+🌐 Post-Quantum Confidentiality
 
-Indian Localization: All patient and doctor names are localized.
+Hybrid Post-Quantum Cryptography (Active - Hybrid PQC): This addresses the future threat of quantum computing. It simulates securing the entire TLS connection using both classic and a new, quantum-resistant algorithm (e.g., Kyber), ensuring the data channel is safe from even quantum eavesdropping.
 
-🔒 Cybersecurity Features
+🚀 Operational Features (Functional Prototype)
 
-This dashboard simulates a UI for a system secured with next-generation protocols:
+Real-time Fleet Command: A clean, responsive dashboard providing a system-wide view of all active ambulances and aggregated system averages.
 
-Merkle Tree Verification (Data Integrity):
+Actionable Vitals Snapshot: Key vitals (HR, SpO₂, BP) are displayed directly on the main dashboard cards for immediate, life-critical operational awareness.
 
-The "Verified (Merkle Check OK)" status in the modal symbolizes that the stream of patient vitals (e.g., [80, 81, 80, 82]) is being cryptographically verified.
+Detailed Patient View: The modal provides a full-screen display of all five vitals, a simulated live-updating trend chart, and the full response timeline.
 
-This proves that no data points have been altered, added, or deleted during transmission.
+Geospatial Tracking: Integrated map shows the ambulance's live location and destination (Vishwaraj Hospital, Pune).
 
-Hybrid Post-Quantum Cryptography (Connection Security):
+Contextual Localization: All mock patient and doctor names are localized for immediate relevance in the Indian context.
 
-The "Active (Hybrid PQC)" status symbolizes that the entire connection (TLS) is secured using both a classic algorithm AND a new, quantum-resistant algorithm.
-
-This ensures the data channel is safe from eavesdropping, even from an attacker with a quantum computer.
+Clinical Aesthetic: Professional, deep blue (#0052CC) theme with a clean interface and accessible contrast, ideal for a critical medical environment.
 
 💻 Tech Stack
 
-HTML5: For semantic page structure.
+This project is a single-file, pure frontend application prototype. No build step is required.
 
-Tailwind CSS: For all styling and responsive design.
+HTML5 & JavaScript (ES6+): Core structure, dynamic routing, modal logic, and interactivity.
 
-JavaScript (ES6+): For interactivity, modal logic, and chart simulation.
+Tailwind CSS: Used exclusively for styling, layout, and mobile-first responsive design.
 
-Chart.js: For all live-updating line charts and the fleet overview doughnut chart.
+Chart.js: Powering all data visualizations (live-updating line charts and the fleet overview doughnut chart).
+
+Lucide Icons: Used for clean, professional iconography.
 
 🏃 How to Run
 
